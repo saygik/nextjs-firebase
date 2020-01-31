@@ -1,5 +1,3 @@
-const Index = () => <div>
-    <p>Hello Next.js
-    </p>
-</div>
-export default Index
+import HomePage from '../src/layouts/Index'
+
+export default HomePage
