@@ -16,7 +16,7 @@ import router from 'next/router';
 
 function MenuAppBar(props) {
     const {signedIn, anchorEl,open, classes}= props
-    const {handleLogout, handleSignIn,handleClose,handleMenu}= props
+    const {handleLogout, handleSignIn,handleClose,handleMenu, handleUserSettings}= props
 
     return (
         <div className={classes.root}>
@@ -50,7 +50,7 @@ function MenuAppBar(props) {
                                 open={open}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={()=>{  router.push('/usersettings')}}>Profile</MenuItem>
+                                <MenuItem onClick={handleUserSettings}>Profile</MenuItem>
                                 <MenuItem onClick={handleClose}>My account</MenuItem>
                                 <MenuItem onClick={handleLogout}>Sign out</MenuItem>
                             </Menu>
@@ -69,26 +69,30 @@ function MenuAppBar(props) {
 
 function MenuAppBarContainer() {
     const classes = useStyles();
-    const {signedIn,user,dispatch, actions}= useAuth()
+    const {signedIn, actions}= useAuth()
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const open = Boolean(anchorEl);
 
-    function handleMenu(event) {
+    const handleMenu=(event)=>
         setAnchorEl(event.currentTarget);
-    }
-    function handleClose() {
+    const handleClose=()=>
         setAnchorEl(null);
-    }
 
+    const handleUserSettings = () => {
+        setAnchorEl(null);
+        router.push('/usersettings')
+    }
     const handleLogout = () => {
         setAnchorEl(null);
-        dispatch({type: actions.SIGN_OUT_REQUEST, payload: true})
+        actions.signOut()
+//        dispatch({type: actions.SIGN_OUT_REQUEST, payload: true})
     }
     const handleSignIn = () => {
         setAnchorEl(null);
-        dispatch({type: actions.SIGN_IN_REQUEST, payload: true})
+        actions.signIn()
+//        dispatch({type: actions.SIGN_IN_REQUEST, payload: true})
     }
 
     return  <MenuAppBar
@@ -100,7 +104,7 @@ function MenuAppBarContainer() {
         handleSignIn={handleSignIn}
         handleMenu={handleMenu}
         handleClose={handleClose}
-
+        handleUserSettings={handleUserSettings}
     />
 }
 

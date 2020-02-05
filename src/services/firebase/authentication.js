@@ -381,10 +381,25 @@ authentication.changeAvatar = (avatar) => {
     });
 };
 
+authentication.updateUser = () => {
+    return new Promise((resolve, reject) => {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            reject();
+            return;
+        }
+
+        const uid = currentUser.uid;
+        if (!uid) {
+            reject();
+            return;
+        }
+        resolve(currentUser)
+    })
+}
 authentication.removeAvatar = () => {
     return new Promise((resolve, reject) => {
         const currentUser = auth.currentUser;
-
         if (!currentUser) {
             reject();
 
@@ -401,9 +416,8 @@ authentication.removeAvatar = () => {
 
         currentUser.updateProfile({
             photoURL: null
-        }).then((value) => {
+        }).then(() => {
             const reference = storage.ref().child('images').child('avatars').child(uid);
-
             if (!reference) {
                 reject();
 
@@ -412,7 +426,6 @@ authentication.removeAvatar = () => {
 
             reference.delete().then((value) => {
 //               analytics.logEvent('remove_avatar');
-
                 resolve(value);
             }).catch((reason) => {
                 reject(reason);

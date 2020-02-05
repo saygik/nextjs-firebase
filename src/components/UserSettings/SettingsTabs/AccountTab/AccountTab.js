@@ -38,289 +38,100 @@ import WarningIcon from '@material-ui/icons/Warning';
 import CheckIcon from '@material-ui/icons/Check';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import {useAuth} from "../../../../context/AuthStore"
+import {getNameInitials} from "../../../../utils"
+import AvatarSelector from "./AvatarSelector"
 
 import {  makeStyles } from '@material-ui/core/styles';
 const AccountTab =(props)=>{
-    const  classes  = useStyles();
-    const [avatar, setAvatar]=useState(null)
-    const [avatarUrl, setAvatarUrl]=useState('')
-    const [loadingAvatar, setLoadingAvatar]=useState(false)
+    const {user, actions}=useAuth();
+    const [performingAction, setPerformingAction]=useState(false)
 
-
-   const getNameInitials = () => {
-
-        const firstName = 'Igor'
-        const lastName = 'Krapivin'
-        const username = 'say'
-        const displayName = ''
-
-        if (firstName && lastName) {
-            return firstName.charAt(0) + lastName.charAt(0);
-        } else if (firstName) {
-            return firstName.charAt(0)
-        } else if (lastName) {
-            return lastName.charAt(0);
-        } else if (username) {
-            return username.charAt(0);
-        } else if (displayName) {
-            return displayName.charAt(0);
-        } else {
-            return 'NN';
-        }
-    };
-    useEffect(()=>{
-        loadingAvatar && auth.changeAvatar(avatar).then((value) => {
-            console.log('changed avatar')
-        }).catch((reason) => {
-            const code = reason.code;
-            const message = reason.message;
-            console.log('not changed avatar')
-        }).finally(() => {
-            setLoadingAvatar(false)
-        });
-    }, [loadingAvatar])
-
-   const uploadAvatar = () => {
-
-        if (!avatar) {
-            return;
-        }
-       setLoadingAvatar(true)
-    };
-   const handleAvatarChange = (event) => {
-        if (!event) {
-            return;
-        }
-
-        const files = event.target.files;
-
-        if (!files) {
-            return;
-        }
-
-        const avatarNew = files[0];
-
-        if (!avatarNew) {
-            return;
-        }
-
-        const fileTypes = [
-            'image/gif',
-            'image/jpeg',
-            'image/png',
-            'image/webp',
-            'image/svg+xml'
-        ];
-
-        if (!fileTypes.includes(avatarNew.type)) {
-            return;
-        }
-
-        if (avatarNew.size > (20 * 1024 * 1024)) {
-            return;
-        }
-       setAvatar(avatarNew)
-       setAvatarUrl(URL.createObjectURL(avatarNew))
-
-    };
-
-   const removeAvatar = () => {
-        const { user } = this.props;
-        const { avatar, avatarUrl } = this.state;
-
-        if (!user.photoURL && !avatar && !avatarUrl) {
-            return;
-        }
-
-        if ((!user.photoURL && avatar && avatarUrl) || (user.photoURL && avatar && avatarUrl)) {
-            URL.revokeObjectURL(avatarUrl);
-            setAvatar(null)
-            setAvatarUrl('')
-        } else if (user.photoURL && !avatar && !avatarUrl) {
-                authentication.removeAvatar().then((value) => {
-                    this.props.openSnackbar('Removed avatar');
-                }).catch((reason) => {
-                    const code = reason.code;
-                    const message = reason.message;
-
-                    switch (code) {
-                        default:
-                            this.props.openSnackbar(message);
-                            return;
-                    }
-                }).finally(() => {
-                    this.setState({
-                        performingAction: false,
-                        loadingAvatar: false
-                    });
-                });
-        }
-    };
-
+    const handleDeleteAccount = () => {
+        console.log('delete')
+    }
     return (
         <>
-            <Grid alignItems="center" container>
+            <Grid alignItems="center" container mb={3.5}>
                 <Grid item xs>
                     <Box textAlign="center">
-                        <Box mb={1.5}>
-                            {(avatar && avatarUrl) &&
-                            <Badge classes={{ badge: classes.badge }} badgeContent={
-                                <Tooltip title="Remove">
-                                    {/*<Fab classes={{ sizeSmall: classes.small }} color="secondary"  size="small" onClick={removeAvatar}>*/}
-                                    {/*    <CloseIcon fontSize="small" />*/}
-                                    {/*</Fab>*/}
-                                </Tooltip>
-                            }>
-                                {loadingAvatar &&
-                                <Badge classes={{ badge: classes.loadingBadge }} badgeContent={
-                                    <Fade
-                                        style={{ transitionDelay: '1s' }}
-                                        in={loadingAvatar}
-                                        unmountOnExit>
-                                        <CircularProgress size={120} thickness={1.8} />
-                                    </Fade>
-                                }>
-                                    <Avatar className={classes.avatar} alt="Avatar" src={avatarUrl} />
-                                </Badge>
-                                }
-
-                                {!loadingAvatar &&
-                                <Avatar className={classes.avatar} alt="Avatar" src={avatarUrl} />
-                                }
-                            </Badge>
-                            }
-
-                            {(!avatar && !avatarUrl) &&
-                            <>
-                                {
-                                <Badge classes={{ badge: classes.badge }} badgeContent={
-                                    <Tooltip title="Remove">
-                                        {/*<Fab classes={{ sizeSmall: classes.small }} color="secondary" size="small" onClick={removeAvatar}>*/}
-                                        {/*    <CloseIcon fontSize="small" />*/}
-                                        {/*</Fab>*/}
-                                    </Tooltip>
-                                }>
-                                    {loadingAvatar &&
-                                    <Badge classes={{ badge: classes.loadingBadge }} badgeContent={
-                                        <Fade
-                                            style={{ transitionDelay: '1s' }}
-                                            in={loadingAvatar}
-                                            unmountOnExit>
-                                            <CircularProgress size={120} thickness={1.8} />
-                                        </Fade>
-                                    }>
-                                        <Avatar className={classes.avatar} alt="Avatar" src={avatarUrl} />
-                                    </Badge>
-                                    }
-
-                                    {!loadingAvatar &&
-                                    <Avatar className={classes.avatar} alt="Avatar" src={avatarUrl} />
-                                    }
-                                </Badge>
-                                }
-
-                                {
-                                <>
-                                    {loadingAvatar &&
-                                    <Badge classes={{ badge: classes.loadingBadge }} badgeContent={
-                                        <Fade
-                                            style={{ transitionDelay: '1s' }}
-                                            in={loadingAvatar}
-                                            unmountOnExit>
-                                            <CircularProgress size={120} thickness={1.8} />
-                                        </Fade>
-                                    }>
-                                        <Avatar className={classes.avatar} alt="Avatar">
-                                            <Typography className={classes.nameInitials} variant="h2">{getNameInitials()}</Typography>
-                                        </Avatar>
-                                    </Badge>
-                                    }
-
-                                    {!loadingAvatar &&
-                                    <Avatar className={classes.avatar} alt="Avatar">
-                                        <Typography className={classes.nameInitials} variant="h2">{getNameInitials()}</Typography>
-                                    </Avatar>
-                                    }
-                                </>
-                                }
-                            </>
-                            }
+                        <Box mt={1.5} mb={1.5}>
+                            <AvatarSelector
+                                user={user}
+                                updateUser={actions.updateUser}
+                                performingAction={performingAction}
+                                setPerformingAction={setPerformingAction}/>
                         </Box>
-
-                        {(avatar && avatarUrl) &&
-                        <Button color="primary" startIcon={<CloudUploadIcon />} variant="contained" onClick={uploadAvatar}>
-                            Upload
-                        </Button>
-                        }
-
-                        {(!avatar && !avatarUrl) &&
-                        <>
-                            <input
-                                id="avatar-input"
-                                type="file"
-                                hidden
-                                accept="image/*"
-
-                                onChange={handleAvatarChange}
-                            />
-
-                            <label htmlFor="avatar-input">
-                                <Button color="primary" component="span"  startIcon={<PhotoIcon />} variant="contained">
-                                    Choose...
-                                </Button>
-                            </label>
-                        </>
-                        }
                     </Box>
                 </Grid>
-
                 <Grid item xs>
-
                 </Grid>
-                <Grid item xs>
-
+                <Grid item xs >
+                    <Box textAlign="center" >
+                        <Typography variant="body1">Security rating</Typography>
+                            <Typography color="primary" variant="h5">
+                                90%
+                            </Typography>
+                    </Box>
                 </Grid>
-
             </Grid>
+            <Box mt={3.5} >
+                <List disablePadding>
+                    <ListItem>
+                        <Hidden xsDown>
+                            <ListItemIcon>
+                                <AccessTimeIcon />
+                            </ListItemIcon>
+                        </Hidden>
+
+                        <Hidden xsDown>
+                            <ListItemText
+                                primary="Signed in"
+                                secondary={user ? user.lastSignInTime: ''}
+                            />
+                        </Hidden>
+
+                        <Hidden smUp>
+                            <ListItemText
+                                primary="Signed in"
+                                secondary={user ? user.lastSignInTime: ''}
+                            />
+                        </Hidden>
+                    </ListItem>
+
+                    <Box mt={1} mb={1}>
+                        <Divider light />
+                    </Box>
+
+                    <ListItem>
+                        <Hidden xsDown>
+                            <ListItemIcon>
+                                <DeleteForeverIcon />
+                            </ListItemIcon>
+                        </Hidden>
+
+                        <ListItemText
+                            primary="Delete account"
+                            secondary="Accounts can’t be recovered"
+                        />
+
+                        <ListItemSecondaryAction>
+                            <Button
+                                color="secondary"
+                                disabled={performingAction}
+                                variant="contained"
+                                onClick={handleDeleteAccount}
+                            >
+                                Delete
+                            </Button>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+
+                </List>
+            </Box>
 
         </>
     )
-
 }
-
-const useStyles = makeStyles(theme => ({
-    dialogContent: {
-        paddingTop: theme.spacing(2)
-    },
-
-    badge: {
-        top: theme.spacing(2),
-        right: -theme.spacing(2)
-    },
-
-    loadingBadge: {
-        top: '50%',
-        right: '50%'
-    },
-
-    avatar: {
-        marginRight: 'auto',
-        marginLeft: 'auto',
-
-        width: theme.spacing(14),
-        height: theme.spacing(14)
-    },
-
-    nameInitials: {
-        cursor: 'default'
-    },
-
-    small: {
-        width: theme.spacing(4),
-        height: theme.spacing(4),
-
-        minHeight: 'initial'
-    }
-}));
 
 export default AccountTab;
